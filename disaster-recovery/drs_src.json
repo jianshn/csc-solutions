@@ -1,928 +1,942 @@
 {
- "Resources": {
-  "SOURCEVPCD437F867": {
-   "Type": "AWS::EC2::VPC",
-   "Properties": {
-    "CidrBlock": "10.0.0.0/16",
-    "EnableDnsHostnames": true,
-    "EnableDnsSupport": true,
-    "InstanceTenancy": "default",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "SOURCE-VPC"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/Resource"
-   }
-  },
-  "SOURCEVPCPublicSubnet1SubnetBBEA2A81": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "VpcId": {
-     "Ref": "SOURCEVPCD437F867"
+  "Parameters": {
+    "LatestAmiId": {
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+      "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
     },
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
+    "LatestUbuntuAMI": {
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+      "Default": "/aws/service/canonical/ubuntu/server/bionic/stable/current/amd64/hvm/ebs-gp2/ami-id"
+    },
+    "LatestWindowsAMI": {
+     "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+     "Default": "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-Base"
+    }
+  },
+  "Resources": {
+   "SOURCEVPCD437F867": {
+    "Type": "AWS::EC2::VPC",
+    "Properties": {
+     "CidrBlock": "10.0.0.0/16",
+     "EnableDnsHostnames": true,
+     "EnableDnsSupport": true,
+     "InstanceTenancy": "default",
+     "Tags": [
       {
-       "Fn::GetAZs": ""
+       "Key": "Name",
+       "Value": "SOURCE-VPC"
       }
      ]
     },
-    "CidrBlock": "10.0.0.0/18",
-    "MapPublicIpOnLaunch": true,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Public"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Public"
-     },
-     {
-      "Key": "Name",
-      "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet1"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet1/Subnet"
-   }
-  },
-  "SOURCEVPCPublicSubnet1RouteTable241C930B": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Ref": "SOURCEVPCD437F867"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet1"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet1/RouteTable"
-   }
-  },
-  "SOURCEVPCPublicSubnet1RouteTableAssociation2EEE49BA": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "SOURCEVPCPublicSubnet1RouteTable241C930B"
-    },
-    "SubnetId": {
-     "Ref": "SOURCEVPCPublicSubnet1SubnetBBEA2A81"
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/Resource"
     }
    },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet1/RouteTableAssociation"
-   }
-  },
-  "SOURCEVPCPublicSubnet1DefaultRoute24AA2ED3": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "SOURCEVPCPublicSubnet1RouteTable241C930B"
-    },
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "SOURCEVPCIGW698CFA46"
-    }
-   },
-   "DependsOn": [
-    "SOURCEVPCVPCGW451C7F39"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet1/DefaultRoute"
-   }
-  },
-  "SOURCEVPCPublicSubnet1EIP7CE2E23E": {
-   "Type": "AWS::EC2::EIP",
-   "Properties": {
-    "Domain": "vpc",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet1"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet1/EIP"
-   }
-  },
-  "SOURCEVPCPublicSubnet1NATGateway0C022B7E": {
-   "Type": "AWS::EC2::NatGateway",
-   "Properties": {
-    "SubnetId": {
-     "Ref": "SOURCEVPCPublicSubnet1SubnetBBEA2A81"
-    },
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "SOURCEVPCPublicSubnet1EIP7CE2E23E",
-      "AllocationId"
-     ]
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet1"
-     }
-    ]
-   },
-   "DependsOn": [
-    "SOURCEVPCPublicSubnet1DefaultRoute24AA2ED3",
-    "SOURCEVPCPublicSubnet1RouteTableAssociation2EEE49BA"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet1/NATGateway"
-   }
-  },
-  "SOURCEVPCPublicSubnet2Subnet15A6A791": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "VpcId": {
-     "Ref": "SOURCEVPCD437F867"
-    },
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
+   "SOURCEVPCPublicSubnet1SubnetBBEA2A81": {
+    "Type": "AWS::EC2::Subnet",
+    "Properties": {
+     "VpcId": {
+      "Ref": "SOURCEVPCD437F867"
+     },
+     "AvailabilityZone": {
+      "Fn::Select": [
+       0,
+       {
+        "Fn::GetAZs": ""
+       }
+      ]
+     },
+     "CidrBlock": "10.0.0.0/18",
+     "MapPublicIpOnLaunch": true,
+     "Tags": [
       {
-       "Fn::GetAZs": ""
+       "Key": "aws-cdk:subnet-name",
+       "Value": "Public"
+      },
+      {
+       "Key": "aws-cdk:subnet-type",
+       "Value": "Public"
+      },
+      {
+       "Key": "Name",
+       "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet1"
       }
      ]
     },
-    "CidrBlock": "10.0.64.0/18",
-    "MapPublicIpOnLaunch": true,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Public"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Public"
-     },
-     {
-      "Key": "Name",
-      "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet2"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet2/Subnet"
-   }
-  },
-  "SOURCEVPCPublicSubnet2RouteTableF5290EC3": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Ref": "SOURCEVPCD437F867"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet2"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet2/RouteTable"
-   }
-  },
-  "SOURCEVPCPublicSubnet2RouteTableAssociation25F4C31D": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "SOURCEVPCPublicSubnet2RouteTableF5290EC3"
-    },
-    "SubnetId": {
-     "Ref": "SOURCEVPCPublicSubnet2Subnet15A6A791"
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet1/Subnet"
     }
    },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet2/RouteTableAssociation"
-   }
-  },
-  "SOURCEVPCPublicSubnet2DefaultRoute4DB73951": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "SOURCEVPCPublicSubnet2RouteTableF5290EC3"
-    },
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "GatewayId": {
-     "Ref": "SOURCEVPCIGW698CFA46"
-    }
-   },
-   "DependsOn": [
-    "SOURCEVPCVPCGW451C7F39"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet2/DefaultRoute"
-   }
-  },
-  "SOURCEVPCPublicSubnet2EIP13F41D5F": {
-   "Type": "AWS::EC2::EIP",
-   "Properties": {
-    "Domain": "vpc",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet2"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet2/EIP"
-   }
-  },
-  "SOURCEVPCPublicSubnet2NATGatewayD95343BB": {
-   "Type": "AWS::EC2::NatGateway",
-   "Properties": {
-    "SubnetId": {
-     "Ref": "SOURCEVPCPublicSubnet2Subnet15A6A791"
-    },
-    "AllocationId": {
-     "Fn::GetAtt": [
-      "SOURCEVPCPublicSubnet2EIP13F41D5F",
-      "AllocationId"
-     ]
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet2"
-     }
-    ]
-   },
-   "DependsOn": [
-    "SOURCEVPCPublicSubnet2DefaultRoute4DB73951",
-    "SOURCEVPCPublicSubnet2RouteTableAssociation25F4C31D"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet2/NATGateway"
-   }
-  },
-  "SOURCEVPCPrivateSubnet1Subnet2CACD918": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "VpcId": {
-     "Ref": "SOURCEVPCD437F867"
-    },
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
+   "SOURCEVPCPublicSubnet1RouteTable241C930B": {
+    "Type": "AWS::EC2::RouteTable",
+    "Properties": {
+     "VpcId": {
+      "Ref": "SOURCEVPCD437F867"
+     },
+     "Tags": [
       {
-       "Fn::GetAZs": ""
+       "Key": "Name",
+       "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet1"
       }
      ]
     },
-    "CidrBlock": "10.0.128.0/18",
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Private"
-     },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Private"
-     },
-     {
-      "Key": "Name",
-      "Value": "WebhostingStack/SOURCE-VPC/PrivateSubnet1"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet1/Subnet"
-   }
-  },
-  "SOURCEVPCPrivateSubnet1RouteTable7292CFE6": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Ref": "SOURCEVPCD437F867"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "WebhostingStack/SOURCE-VPC/PrivateSubnet1"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet1/RouteTable"
-   }
-  },
-  "SOURCEVPCPrivateSubnet1RouteTableAssociationFDCD50C5": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "SOURCEVPCPrivateSubnet1RouteTable7292CFE6"
-    },
-    "SubnetId": {
-     "Ref": "SOURCEVPCPrivateSubnet1Subnet2CACD918"
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet1/RouteTable"
     }
    },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet1/RouteTableAssociation"
-   }
-  },
-  "SOURCEVPCPrivateSubnet1DefaultRoute7839367E": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "SOURCEVPCPrivateSubnet1RouteTable7292CFE6"
+   "SOURCEVPCPublicSubnet1RouteTableAssociation2EEE49BA": {
+    "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    "Properties": {
+     "RouteTableId": {
+      "Ref": "SOURCEVPCPublicSubnet1RouteTable241C930B"
+     },
+     "SubnetId": {
+      "Ref": "SOURCEVPCPublicSubnet1SubnetBBEA2A81"
+     }
     },
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "NatGatewayId": {
-     "Ref": "SOURCEVPCPublicSubnet1NATGateway0C022B7E"
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet1/RouteTableAssociation"
     }
    },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet1/DefaultRoute"
-   }
-  },
-  "SOURCEVPCPrivateSubnet2Subnet8F8D6C97": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "VpcId": {
-     "Ref": "SOURCEVPCD437F867"
+   "SOURCEVPCPublicSubnet1DefaultRoute24AA2ED3": {
+    "Type": "AWS::EC2::Route",
+    "Properties": {
+     "RouteTableId": {
+      "Ref": "SOURCEVPCPublicSubnet1RouteTable241C930B"
+     },
+     "DestinationCidrBlock": "0.0.0.0/0",
+     "GatewayId": {
+      "Ref": "SOURCEVPCIGW698CFA46"
+     }
     },
-    "AvailabilityZone": {
-     "Fn::Select": [
-      1,
+    "DependsOn": [
+     "SOURCEVPCVPCGW451C7F39"
+    ],
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet1/DefaultRoute"
+    }
+   },
+   "SOURCEVPCPublicSubnet1EIP7CE2E23E": {
+    "Type": "AWS::EC2::EIP",
+    "Properties": {
+     "Domain": "vpc",
+     "Tags": [
       {
-       "Fn::GetAZs": ""
+       "Key": "Name",
+       "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet1"
       }
      ]
     },
-    "CidrBlock": "10.0.192.0/18",
-    "MapPublicIpOnLaunch": false,
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-name",
-      "Value": "Private"
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet1/EIP"
+    }
+   },
+   "SOURCEVPCPublicSubnet1NATGateway0C022B7E": {
+    "Type": "AWS::EC2::NatGateway",
+    "Properties": {
+     "SubnetId": {
+      "Ref": "SOURCEVPCPublicSubnet1SubnetBBEA2A81"
      },
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Private"
+     "AllocationId": {
+      "Fn::GetAtt": [
+       "SOURCEVPCPublicSubnet1EIP7CE2E23E",
+       "AllocationId"
+      ]
      },
-     {
-      "Key": "Name",
-      "Value": "WebhostingStack/SOURCE-VPC/PrivateSubnet2"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet2/Subnet"
-   }
-  },
-  "SOURCEVPCPrivateSubnet2RouteTable0819DCEF": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "VpcId": {
-     "Ref": "SOURCEVPCD437F867"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "WebhostingStack/SOURCE-VPC/PrivateSubnet2"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet2/RouteTable"
-   }
-  },
-  "SOURCEVPCPrivateSubnet2RouteTableAssociationC04E4027": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "SOURCEVPCPrivateSubnet2RouteTable0819DCEF"
-    },
-    "SubnetId": {
-     "Ref": "SOURCEVPCPrivateSubnet2Subnet8F8D6C97"
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet2/RouteTableAssociation"
-   }
-  },
-  "SOURCEVPCPrivateSubnet2DefaultRouteA84AE8F3": {
-   "Type": "AWS::EC2::Route",
-   "Properties": {
-    "RouteTableId": {
-     "Ref": "SOURCEVPCPrivateSubnet2RouteTable0819DCEF"
-    },
-    "DestinationCidrBlock": "0.0.0.0/0",
-    "NatGatewayId": {
-     "Ref": "SOURCEVPCPublicSubnet2NATGatewayD95343BB"
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet2/DefaultRoute"
-   }
-  },
-  "SOURCEVPCIGW698CFA46": {
-   "Type": "AWS::EC2::InternetGateway",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "SOURCE-VPC"
-     }
-    ]
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/IGW"
-   }
-  },
-  "SOURCEVPCVPCGW451C7F39": {
-   "Type": "AWS::EC2::VPCGatewayAttachment",
-   "Properties": {
-    "VpcId": {
-     "Ref": "SOURCEVPCD437F867"
-    },
-    "InternetGatewayId": {
-     "Ref": "SOURCEVPCIGW698CFA46"
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/SOURCE-VPC/VPCGW"
-   }
-  },
-  "webserverRole": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
+     "Tags": [
       {
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ec2.amazonaws.com"
+       "Key": "Name",
+       "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet1"
+      }
+     ]
+    },
+    "DependsOn": [
+     "SOURCEVPCPublicSubnet1DefaultRoute24AA2ED3",
+     "SOURCEVPCPublicSubnet1RouteTableAssociation2EEE49BA"
+    ],
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet1/NATGateway"
+    }
+   },
+   "SOURCEVPCPublicSubnet2Subnet15A6A791": {
+    "Type": "AWS::EC2::Subnet",
+    "Properties": {
+     "VpcId": {
+      "Ref": "SOURCEVPCD437F867"
+     },
+     "AvailabilityZone": {
+      "Fn::Select": [
+       1,
+       {
+        "Fn::GetAZs": ""
+       }
+      ]
+     },
+     "CidrBlock": "10.0.64.0/18",
+     "MapPublicIpOnLaunch": true,
+     "Tags": [
+      {
+       "Key": "aws-cdk:subnet-name",
+       "Value": "Public"
+      },
+      {
+       "Key": "aws-cdk:subnet-type",
+       "Value": "Public"
+      },
+      {
+       "Key": "Name",
+       "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet2"
+      }
+     ]
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet2/Subnet"
+    }
+   },
+   "SOURCEVPCPublicSubnet2RouteTableF5290EC3": {
+    "Type": "AWS::EC2::RouteTable",
+    "Properties": {
+     "VpcId": {
+      "Ref": "SOURCEVPCD437F867"
+     },
+     "Tags": [
+      {
+       "Key": "Name",
+       "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet2"
+      }
+     ]
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet2/RouteTable"
+    }
+   },
+   "SOURCEVPCPublicSubnet2RouteTableAssociation25F4C31D": {
+    "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    "Properties": {
+     "RouteTableId": {
+      "Ref": "SOURCEVPCPublicSubnet2RouteTableF5290EC3"
+     },
+     "SubnetId": {
+      "Ref": "SOURCEVPCPublicSubnet2Subnet15A6A791"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet2/RouteTableAssociation"
+    }
+   },
+   "SOURCEVPCPublicSubnet2DefaultRoute4DB73951": {
+    "Type": "AWS::EC2::Route",
+    "Properties": {
+     "RouteTableId": {
+      "Ref": "SOURCEVPCPublicSubnet2RouteTableF5290EC3"
+     },
+     "DestinationCidrBlock": "0.0.0.0/0",
+     "GatewayId": {
+      "Ref": "SOURCEVPCIGW698CFA46"
+     }
+    },
+    "DependsOn": [
+     "SOURCEVPCVPCGW451C7F39"
+    ],
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet2/DefaultRoute"
+    }
+   },
+   "SOURCEVPCPublicSubnet2EIP13F41D5F": {
+    "Type": "AWS::EC2::EIP",
+    "Properties": {
+     "Domain": "vpc",
+     "Tags": [
+      {
+       "Key": "Name",
+       "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet2"
+      }
+     ]
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet2/EIP"
+    }
+   },
+   "SOURCEVPCPublicSubnet2NATGatewayD95343BB": {
+    "Type": "AWS::EC2::NatGateway",
+    "Properties": {
+     "SubnetId": {
+      "Ref": "SOURCEVPCPublicSubnet2Subnet15A6A791"
+     },
+     "AllocationId": {
+      "Fn::GetAtt": [
+       "SOURCEVPCPublicSubnet2EIP13F41D5F",
+       "AllocationId"
+      ]
+     },
+     "Tags": [
+      {
+       "Key": "Name",
+       "Value": "WebhostingStack/SOURCE-VPC/PublicSubnet2"
+      }
+     ]
+    },
+    "DependsOn": [
+     "SOURCEVPCPublicSubnet2DefaultRoute4DB73951",
+     "SOURCEVPCPublicSubnet2RouteTableAssociation25F4C31D"
+    ],
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PublicSubnet2/NATGateway"
+    }
+   },
+   "SOURCEVPCPrivateSubnet1Subnet2CACD918": {
+    "Type": "AWS::EC2::Subnet",
+    "Properties": {
+     "VpcId": {
+      "Ref": "SOURCEVPCD437F867"
+     },
+     "AvailabilityZone": {
+      "Fn::Select": [
+       0,
+       {
+        "Fn::GetAZs": ""
+       }
+      ]
+     },
+     "CidrBlock": "10.0.128.0/18",
+     "MapPublicIpOnLaunch": false,
+     "Tags": [
+      {
+       "Key": "aws-cdk:subnet-name",
+       "Value": "Private"
+      },
+      {
+       "Key": "aws-cdk:subnet-type",
+       "Value": "Private"
+      },
+      {
+       "Key": "Name",
+       "Value": "WebhostingStack/SOURCE-VPC/PrivateSubnet1"
+      }
+     ]
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet1/Subnet"
+    }
+   },
+   "SOURCEVPCPrivateSubnet1RouteTable7292CFE6": {
+    "Type": "AWS::EC2::RouteTable",
+    "Properties": {
+     "VpcId": {
+      "Ref": "SOURCEVPCD437F867"
+     },
+     "Tags": [
+      {
+       "Key": "Name",
+       "Value": "WebhostingStack/SOURCE-VPC/PrivateSubnet1"
+      }
+     ]
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet1/RouteTable"
+    }
+   },
+   "SOURCEVPCPrivateSubnet1RouteTableAssociationFDCD50C5": {
+    "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    "Properties": {
+     "RouteTableId": {
+      "Ref": "SOURCEVPCPrivateSubnet1RouteTable7292CFE6"
+     },
+     "SubnetId": {
+      "Ref": "SOURCEVPCPrivateSubnet1Subnet2CACD918"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet1/RouteTableAssociation"
+    }
+   },
+   "SOURCEVPCPrivateSubnet1DefaultRoute7839367E": {
+    "Type": "AWS::EC2::Route",
+    "Properties": {
+     "RouteTableId": {
+      "Ref": "SOURCEVPCPrivateSubnet1RouteTable7292CFE6"
+     },
+     "DestinationCidrBlock": "0.0.0.0/0",
+     "NatGatewayId": {
+      "Ref": "SOURCEVPCPublicSubnet1NATGateway0C022B7E"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet1/DefaultRoute"
+    }
+   },
+   "SOURCEVPCPrivateSubnet2Subnet8F8D6C97": {
+    "Type": "AWS::EC2::Subnet",
+    "Properties": {
+     "VpcId": {
+      "Ref": "SOURCEVPCD437F867"
+     },
+     "AvailabilityZone": {
+      "Fn::Select": [
+       1,
+       {
+        "Fn::GetAZs": ""
+       }
+      ]
+     },
+     "CidrBlock": "10.0.192.0/18",
+     "MapPublicIpOnLaunch": false,
+     "Tags": [
+      {
+       "Key": "aws-cdk:subnet-name",
+       "Value": "Private"
+      },
+      {
+       "Key": "aws-cdk:subnet-type",
+       "Value": "Private"
+      },
+      {
+       "Key": "Name",
+       "Value": "WebhostingStack/SOURCE-VPC/PrivateSubnet2"
+      }
+     ]
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet2/Subnet"
+    }
+   },
+   "SOURCEVPCPrivateSubnet2RouteTable0819DCEF": {
+    "Type": "AWS::EC2::RouteTable",
+    "Properties": {
+     "VpcId": {
+      "Ref": "SOURCEVPCD437F867"
+     },
+     "Tags": [
+      {
+       "Key": "Name",
+       "Value": "WebhostingStack/SOURCE-VPC/PrivateSubnet2"
+      }
+     ]
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet2/RouteTable"
+    }
+   },
+   "SOURCEVPCPrivateSubnet2RouteTableAssociationC04E4027": {
+    "Type": "AWS::EC2::SubnetRouteTableAssociation",
+    "Properties": {
+     "RouteTableId": {
+      "Ref": "SOURCEVPCPrivateSubnet2RouteTable0819DCEF"
+     },
+     "SubnetId": {
+      "Ref": "SOURCEVPCPrivateSubnet2Subnet8F8D6C97"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet2/RouteTableAssociation"
+    }
+   },
+   "SOURCEVPCPrivateSubnet2DefaultRouteA84AE8F3": {
+    "Type": "AWS::EC2::Route",
+    "Properties": {
+     "RouteTableId": {
+      "Ref": "SOURCEVPCPrivateSubnet2RouteTable0819DCEF"
+     },
+     "DestinationCidrBlock": "0.0.0.0/0",
+     "NatGatewayId": {
+      "Ref": "SOURCEVPCPublicSubnet2NATGatewayD95343BB"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/PrivateSubnet2/DefaultRoute"
+    }
+   },
+   "SOURCEVPCIGW698CFA46": {
+    "Type": "AWS::EC2::InternetGateway",
+    "Properties": {
+     "Tags": [
+      {
+       "Key": "Name",
+       "Value": "SOURCE-VPC"
+      }
+     ]
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/IGW"
+    }
+   },
+   "SOURCEVPCVPCGW451C7F39": {
+    "Type": "AWS::EC2::VPCGatewayAttachment",
+    "Properties": {
+     "VpcId": {
+      "Ref": "SOURCEVPCD437F867"
+     },
+     "InternetGatewayId": {
+      "Ref": "SOURCEVPCIGW698CFA46"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/SOURCE-VPC/VPCGW"
+    }
+   },
+   "webserverRole": {
+    "Type": "AWS::IAM::Role",
+    "Properties": {
+     "AssumeRolePolicyDocument": {
+      "Version": "2012-10-17",
+      "Statement": [
+       {
+        "Effect": "Allow",
+        "Principal": {
+         "Service": "ec2.amazonaws.com"
+        },
+        "Action": "sts:AssumeRole"
+       }
+      ]
+     },
+     "Description": "New role for Webserver and database Instance",
+     "ManagedPolicyArns": [
+      "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+      "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
+     ],
+     "RoleName": "SSMInstanceProfileSrc"
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/webserver_Role"
+    }
+   },
+   "WebserverInstanceProfile": {
+    "Type": "AWS::IAM::InstanceProfile",
+    "Properties": {
+     "Roles": [
+      "SSMInstanceProfileSrc"
+     ],
+     "InstanceProfileName": "SSMInstanceProfileSrc"
+    },
+    "DependsOn": [
+     "webserverRole"
+    ],
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/WebserverInstanceProfile"
+    }
+   },
+   "WebserverSGD0BE264E": {
+    "Type": "AWS::EC2::SecurityGroup",
+    "Properties": {
+     "GroupDescription": "WebhostingStack/WebserverSG",
+     "GroupName": "Immersion Day - Web Server",
+     "SecurityGroupEgress": [
+      {
+       "CidrIp": "0.0.0.0/0",
+       "Description": "Allow all outbound traffic by default",
+       "IpProtocol": "-1"
+      }
+     ],
+     "SecurityGroupIngress": [
+      {
+       "CidrIp": "0.0.0.0/0",
+       "Description": "SSH",
+       "FromPort": 22,
+       "IpProtocol": "tcp",
+       "ToPort": 22
+      },
+      {
+       "CidrIp": "0.0.0.0/0",
+       "Description": "HTTP",
+       "FromPort": 80,
+       "IpProtocol": "tcp",
+       "ToPort": 80
+      },
+      {
+       "CidrIp": "0.0.0.0/0",
+       "Description": "RDP",
+       "FromPort": 3389,
+       "IpProtocol": "tcp",
+       "ToPort": 3389
+      }
+     ],
+     "VpcId": {
+      "Ref": "SOURCEVPCD437F867"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/WebserverSG/Resource"
+    }
+   },
+   "WebALBSG0D1C6E68": {
+    "Type": "AWS::EC2::SecurityGroup",
+    "Properties": {
+     "GroupDescription": "WebhostingStack/WebALBSG",
+     "GroupName": "web-ALB-SG",
+     "SecurityGroupEgress": [
+      {
+       "CidrIp": "0.0.0.0/0",
+       "Description": "Allow all outbound traffic by default",
+       "IpProtocol": "-1"
+      }
+     ],
+     "SecurityGroupIngress": [
+      {
+       "CidrIp": "0.0.0.0/0",
+       "Description": "HTTP",
+       "FromPort": 80,
+       "IpProtocol": "tcp",
+       "ToPort": 80
+      }
+     ],
+     "VpcId": {
+      "Ref": "SOURCEVPCD437F867"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/WebALBSG/Resource"
+    }
+   },
+   "AutoscalingSGDA8F64EC": {
+    "Type": "AWS::EC2::SecurityGroup",
+    "Properties": {
+     "GroupDescription": "WebhostingStack/AutoscalingSG",
+     "GroupName": "ASG-Web_Inst-SG",
+     "SecurityGroupEgress": [
+      {
+       "CidrIp": "0.0.0.0/0",
+       "Description": "Allow all outbound traffic by default",
+       "IpProtocol": "-1"
+      }
+     ],
+     "SecurityGroupIngress": [
+      {
+       "Description": "HTTP",
+       "FromPort": 80,
+       "IpProtocol": "tcp",
+       "SourceSecurityGroupId": {
+        "Fn::GetAtt": [
+         "WebALBSG0D1C6E68",
+         "GroupId"
+        ]
        },
-       "Action": "sts:AssumeRole"
+       "ToPort": 80
       }
-     ]
+     ],
+     "VpcId": {
+      "Ref": "SOURCEVPCD437F867"
+     }
     },
-    "Description": "New role for Webserver and database Instance",
-    "ManagedPolicyArns": [
-     "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
-     "arn:aws:iam::aws:policy/SecretsManagerReadWrite"
-    ],
-    "RoleName": "SSMInstanceProfileSrc"
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/webserver_Role"
-   }
-  },
-  "WebserverInstanceProfile": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     "SSMInstanceProfileSrc"
-    ],
-    "InstanceProfileName": "SSMInstanceProfileSrc"
-   },
-   "DependsOn": [
-    "webserverRole"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/WebserverInstanceProfile"
-   }
-  },
-  "WebserverSGD0BE264E": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "WebhostingStack/WebserverSG",
-    "GroupName": "Immersion Day - Web Server",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "SSH",
-      "FromPort": 22,
-      "IpProtocol": "tcp",
-      "ToPort": 22
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "HTTP",
-      "FromPort": 80,
-      "IpProtocol": "tcp",
-      "ToPort": 80
-     },
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "RDP",
-      "FromPort": 3389,
-      "IpProtocol": "tcp",
-      "ToPort": 3389
-     }
-    ],
-    "VpcId": {
-     "Ref": "SOURCEVPCD437F867"
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/AutoscalingSG/Resource"
     }
    },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/WebserverSG/Resource"
-   }
-  },
-  "WebALBSG0D1C6E68": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "WebhostingStack/WebALBSG",
-    "GroupName": "web-ALB-SG",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
+   "RDSSGDCA0486D": {
+    "Type": "AWS::EC2::SecurityGroup",
+    "Properties": {
+     "GroupDescription": "WebhostingStack/RDSSG",
+     "GroupName": "DB-SG",
+     "SecurityGroupEgress": [
+      {
+       "CidrIp": "0.0.0.0/0",
+       "Description": "Allow all outbound traffic by default",
+       "IpProtocol": "-1"
+      }
+     ],
+     "SecurityGroupIngress": [
+      {
+       "Description": "TCP",
+       "FromPort": 3306,
+       "IpProtocol": "tcp",
+       "SourceSecurityGroupId": {
+        "Fn::GetAtt": [
+         "AutoscalingSGDA8F64EC",
+         "GroupId"
+        ]
+       },
+       "ToPort": 3306
+      }
+     ],
+     "VpcId": {
+      "Ref": "SOURCEVPCD437F867"
      }
-    ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "HTTP",
-      "FromPort": 80,
-      "IpProtocol": "tcp",
-      "ToPort": 80
-     }
-    ],
-    "VpcId": {
-     "Ref": "SOURCEVPCD437F867"
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/RDSSG/Resource"
     }
    },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/WebALBSG/Resource"
-   }
-  },
-  "AutoscalingSGDA8F64EC": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "WebhostingStack/AutoscalingSG",
-    "GroupName": "ASG-Web_Inst-SG",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "SecurityGroupIngress": [
-     {
-      "Description": "HTTP",
-      "FromPort": 80,
-      "IpProtocol": "tcp",
-      "SourceSecurityGroupId": {
+   "WebserverLaunchTemplate": {
+    "Type": "AWS::EC2::LaunchTemplate",
+    "Properties": {
+     "LaunchTemplateData": {
+      "IamInstanceProfile": {
+       "Arn": {
+        "Fn::GetAtt": [
+         "WebserverInstanceProfile",
+         "Arn"
+        ]
+       }
+      },
+      "ImageId": { "Ref": "LatestAmiId" },
+      "InstanceType": "m5.2xlarge",
+      "SecurityGroupIds": [
+       {
+        "Fn::GetAtt": [
+         "AutoscalingSGDA8F64EC",
+         "GroupId"
+        ]
+       }
+      ],
+      "TagSpecifications": [
+       {
+        "ResourceType": "instance",
+        "Tags": [
+         {
+          "Key": "Name",
+          "Value": "Webserver"
+         }
+        ]
+       }
+      ],
+      "UserData": {
+       "Fn::Base64": "#!/bin/sh\n\n# Install a LAMP stack\namazon-linux-extras install -y lamp-mariadb10.2-php7.2 php7.2\nyum -y install httpd php-mbstring\n\n# Start the web server\nchkconfig httpd on\nsystemctl start httpd\n\n# Install the web pages for our lab\nif [ ! -f /var/www/html/immersion-day-app-php7.tar.gz ]; then\n   cd /var/www/html\n   wget https://github.com/HazelHazirah/immersion_php/raw/main/immersion_php.tar.gz\n   sudo tar xvf immersion_php.tar.gz\nfi\n\n# Install the AWS SDK for PHP\nif [ ! -f /var/www/html/aws.zip ]; then\n   cd /var/www/html\n   mkdir vendor\n   cd vendor\n   wget https://docs.aws.amazon.com/aws-sdk-php/v3/download/aws.zip\n   unzip aws.zip\nfi\n\n# Update existing packages\nyum -y update\n"
+      }
+     },
+     "LaunchTemplateName": "web-lt"
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/WebserverLaunchTemplate"
+    }
+   },
+   "webalb6FA2AD75": {
+    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+    "Properties": {
+     "LoadBalancerAttributes": [
+      {
+       "Key": "deletion_protection.enabled",
+       "Value": "false"
+      }
+     ],
+     "Scheme": "internet-facing",
+     "SecurityGroups": [
+      {
        "Fn::GetAtt": [
         "WebALBSG0D1C6E68",
         "GroupId"
        ]
-      },
-      "ToPort": 80
-     }
-    ],
-    "VpcId": {
-     "Ref": "SOURCEVPCD437F867"
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/AutoscalingSG/Resource"
-   }
-  },
-  "RDSSGDCA0486D": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "WebhostingStack/RDSSG",
-    "GroupName": "DB-SG",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "SecurityGroupIngress": [
-     {
-      "Description": "TCP",
-      "FromPort": 3306,
-      "IpProtocol": "tcp",
-      "SourceSecurityGroupId": {
-       "Fn::GetAtt": [
-        "AutoscalingSGDA8F64EC",
-        "GroupId"
-       ]
-      },
-      "ToPort": 3306
-     }
-    ],
-    "VpcId": {
-     "Ref": "SOURCEVPCD437F867"
-    }
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/RDSSG/Resource"
-   }
-  },
-  "WebserverLaunchTemplate": {
-   "Type": "AWS::EC2::LaunchTemplate",
-   "Properties": {
-    "LaunchTemplateData": {
-     "IamInstanceProfile": {
-      "Arn": {
-       "Fn::GetAtt": [
-        "WebserverInstanceProfile",
-        "Arn"
-       ]
-      }
-     },
-     "ImageId": "ami-0b89f7b3f054b957e",
-     "InstanceType": "m5.2xlarge",
-     "SecurityGroupIds": [
-      {
-       "Fn::GetAtt": [
-        "AutoscalingSGDA8F64EC",
-        "GroupId"
-       ]
       }
      ],
-     "TagSpecifications": [
+     "Subnets": [
       {
-       "ResourceType": "instance",
-       "Tags": [
-        {
-         "Key": "Name",
-         "Value": "Webserver"
-        }
-       ]
+       "Ref": "SOURCEVPCPublicSubnet1SubnetBBEA2A81"
+      },
+      {
+       "Ref": "SOURCEVPCPublicSubnet2Subnet15A6A791"
       }
      ],
-     "UserData": {
-      "Fn::Base64": "#!/bin/sh\n\n# Install a LAMP stack\namazon-linux-extras install -y lamp-mariadb10.2-php7.2 php7.2\nyum -y install httpd php-mbstring\n\n# Start the web server\nchkconfig httpd on\nsystemctl start httpd\n\n# Install the web pages for our lab\nif [ ! -f /var/www/html/immersion-day-app-php7.tar.gz ]; then\n   cd /var/www/html\n   wget https://github.com/HazelHazirah/immersion_php/raw/main/immersion_php.tar.gz\n   sudo tar xvf immersion_php.tar.gz\nfi\n\n# Install the AWS SDK for PHP\nif [ ! -f /var/www/html/aws.zip ]; then\n   cd /var/www/html\n   mkdir vendor\n   cd vendor\n   wget https://docs.aws.amazon.com/aws-sdk-php/v3/download/aws.zip\n   unzip aws.zip\nfi\n\n# Update existing packages\nyum -y update\n"
-     }
+     "Type": "application"
     },
-    "LaunchTemplateName": "web-lt"
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/WebserverLaunchTemplate"
-   }
-  },
-  "webalb6FA2AD75": {
-   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
-   "Properties": {
-    "LoadBalancerAttributes": [
-     {
-      "Key": "deletion_protection.enabled",
-      "Value": "false"
-     }
+    "DependsOn": [
+     "SOURCEVPCPublicSubnet1DefaultRoute24AA2ED3",
+     "SOURCEVPCPublicSubnet1RouteTableAssociation2EEE49BA",
+     "SOURCEVPCPublicSubnet2DefaultRoute4DB73951",
+     "SOURCEVPCPublicSubnet2RouteTableAssociation25F4C31D"
     ],
-    "Scheme": "internet-facing",
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "WebALBSG0D1C6E68",
-       "GroupId"
-      ]
-     }
-    ],
-    "Subnets": [
-     {
-      "Ref": "SOURCEVPCPublicSubnet1SubnetBBEA2A81"
-     },
-     {
-      "Ref": "SOURCEVPCPublicSubnet2Subnet15A6A791"
-     }
-    ],
-    "Type": "application"
-   },
-   "DependsOn": [
-    "SOURCEVPCPublicSubnet1DefaultRoute24AA2ED3",
-    "SOURCEVPCPublicSubnet1RouteTableAssociation2EEE49BA",
-    "SOURCEVPCPublicSubnet2DefaultRoute4DB73951",
-    "SOURCEVPCPublicSubnet2RouteTableAssociation25F4C31D"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/web-alb/Resource"
-   }
-  },
-  "webalbListenerCCC3ED65": {
-   "Type": "AWS::ElasticLoadBalancingV2::Listener",
-   "Properties": {
-    "DefaultActions": [
-     {
-      "TargetGroupArn": {
-       "Ref": "webalbListenerwebtgGroup76B12E66"
-      },
-      "Type": "forward"
-     }
-    ],
-    "LoadBalancerArn": {
-     "Ref": "webalb6FA2AD75"
-    },
-    "Port": 80,
-    "Protocol": "HTTP"
-   },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/web-alb/Listener/Resource"
-   }
-  },
-  "webalbListenerwebtgGroup76B12E66": {
-   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
-   "Properties": {
-    "Name": "web-tg",
-    "Port": 80,
-    "Protocol": "HTTP",
-    "TargetGroupAttributes": [
-     {
-      "Key": "stickiness.enabled",
-      "Value": "false"
-     }
-    ],
-    "VpcId": {
-     "Ref": "SOURCEVPCD437F867"
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/web-alb/Resource"
     }
    },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/web-alb/Listener/web-tgGroup/Resource"
-   }
-  },
-  "WebASG": {
-   "Type": "AWS::AutoScaling::AutoScalingGroup",
-   "Properties": {
-    "MaxSize": "10",
-    "MinSize": "2",
-    "AutoScalingGroupName": "Web_ASG",
-    "DesiredCapacity": "2",
-    "LaunchTemplate": {
-     "LaunchTemplateName": "web-lt",
-     "Version": "1"
-    },
-    "TargetGroupARNs": [
-     {
-      "Ref": "webalbListenerwebtgGroup76B12E66"
-     }
-    ],
-    "VPCZoneIdentifier": [
-     {
-      "Ref": "SOURCEVPCPrivateSubnet1Subnet2CACD918"
-     },
-     {
-      "Ref": "SOURCEVPCPrivateSubnet2Subnet8F8D6C97"
-     }
-    ]
-   },
-   "DependsOn": [
-    "WebserverLaunchTemplate"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/Web_ASG"
-   }
-  },
-  "AsgScalingPolicy": {
-   "Type": "AWS::AutoScaling::ScalingPolicy",
-   "Properties": {
-    "AutoScalingGroupName": "Web_ASG",
-    "PolicyType": "TargetTrackingScaling",
-    "TargetTrackingConfiguration": {
-     "PredefinedMetricSpecification": {
-      "PredefinedMetricType": "ASGAverageCPUUtilization"
-     },
-     "TargetValue": 30
-    }
-   },
-   "DependsOn": [
-    "WebASG"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/AsgScalingPolicy"
-   }
-  },
-  "mysqlinstance": {
-   "Type": "AWS::EC2::Instance",
-   "Properties": {
-    "IamInstanceProfile": "SSMInstanceProfileSrc",
-    "ImageId": "ami-02045ebddb047018b",
-    "InstanceType": "m5.xlarge",
-    "SecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "RDSSGDCA0486D",
-       "GroupId"
-      ]
-     }
-    ],
-    "SubnetId": {
-     "Ref": "SOURCEVPCPrivateSubnet1Subnet2CACD918"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "mysqlDb"
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": "#!/bin/sh\n\n# Update OS\napt-get update\napt-get install mysql-server -y\n\n# Initialise database\ncat << 'EoF' > /home/ubuntu/db_setup.sql\n\nCREATE USER 'awsuser'@'%' IDENTIFIED WITH mysql_native_password BY 'awspassword';\nGRANT ALL PRIVILEGES ON *.* TO 'awsuser'@'%' WITH GRANT OPTION;\nFLUSH PRIVILEGES;\nCREATE DATABASE immersionday;\n\nEoF\n\nmysql -e \"source /home/ubuntu/db_setup.sql\"\n\n# Enable open connections\nsed -i \"s/bind-address.*/bind-address = 0.0.0.0/\" /etc/mysql/mysql.conf.d/mysqld.cnf\nsystemctl restart mysql\n"
-    }
-   },
-   "DependsOn": [
-    "SOURCEVPCPublicSubnet1NATGateway0C022B7E"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/mysql-instance"
-   }
-  },
-  "dbSecret": {
-   "Type": "AWS::SecretsManager::Secret",
-   "Properties": {
-    "Name": "mysecret",
-    "SecretString": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"username\": \"awsuser\", \"password\": \"awspassword\", \"host\": \"",
-       {
-        "Fn::GetAtt": [
-         "mysqlinstance",
-         "PrivateIp"
-        ]
+   "webalbListenerCCC3ED65": {
+    "Type": "AWS::ElasticLoadBalancingV2::Listener",
+    "Properties": {
+     "DefaultActions": [
+      {
+       "TargetGroupArn": {
+        "Ref": "webalbListenerwebtgGroup76B12E66"
        },
-       "\", \"dbname\": \"immersionday\"}"
-      ]
-     ]
+       "Type": "forward"
+      }
+     ],
+     "LoadBalancerArn": {
+      "Ref": "webalb6FA2AD75"
+     },
+     "Port": 80,
+     "Protocol": "HTTP"
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/web-alb/Listener/Resource"
     }
    },
-   "DependsOn": [
-    "mysqlinstance"
-   ],
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/dbSecret"
-   }
-  },
-  "Bastion": {
+   "webalbListenerwebtgGroup76B12E66": {
+    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+    "Properties": {
+     "Name": "web-tg",
+     "Port": 80,
+     "Protocol": "HTTP",
+     "TargetGroupAttributes": [
+      {
+       "Key": "stickiness.enabled",
+       "Value": "false"
+      }
+     ],
+     "VpcId": {
+      "Ref": "SOURCEVPCD437F867"
+     }
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/web-alb/Listener/web-tgGroup/Resource"
+    }
+   },
+   "WebASG": {
+    "Type": "AWS::AutoScaling::AutoScalingGroup",
+    "Properties": {
+     "MaxSize": "10",
+     "MinSize": "2",
+     "AutoScalingGroupName": "Web_ASG",
+     "DesiredCapacity": "2",
+     "LaunchTemplate": {
+      "LaunchTemplateName": "web-lt",
+      "Version": "1"
+     },
+     "TargetGroupARNs": [
+      {
+       "Ref": "webalbListenerwebtgGroup76B12E66"
+      }
+     ],
+     "VPCZoneIdentifier": [
+      {
+       "Ref": "SOURCEVPCPrivateSubnet1Subnet2CACD918"
+      },
+      {
+       "Ref": "SOURCEVPCPrivateSubnet2Subnet8F8D6C97"
+      }
+     ]
+    },
+    "DependsOn": [
+     "WebserverLaunchTemplate"
+    ],
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/Web_ASG"
+    }
+   },
+   "AsgScalingPolicy": {
+    "Type": "AWS::AutoScaling::ScalingPolicy",
+    "Properties": {
+     "AutoScalingGroupName": "Web_ASG",
+     "PolicyType": "TargetTrackingScaling",
+     "TargetTrackingConfiguration": {
+      "PredefinedMetricSpecification": {
+       "PredefinedMetricType": "ASGAverageCPUUtilization"
+      },
+      "TargetValue": 30
+     }
+    },
+    "DependsOn": [
+     "WebASG"
+    ],
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/AsgScalingPolicy"
+    }
+   },
+   "mysqlinstance": {
     "Type": "AWS::EC2::Instance",
     "Properties": {
      "IamInstanceProfile": "SSMInstanceProfileSrc",
-     "ImageId": "ami-02d23a284394d70a0",
-     "InstanceType": "t3a.medium",
+     "ImageId": { "Ref": "LatestUbuntuAMI" },
+     "InstanceType": "m5.xlarge",
      "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "RDSSGDCA0486D",
+        "GroupId"
+       ]
+      }
+     ],
+     "SubnetId": {
+      "Ref": "SOURCEVPCPrivateSubnet1Subnet2CACD918"
+     },
+     "Tags": [
+      {
+       "Key": "Name",
+       "Value": "mysqlDb"
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/sh\n\n# Update OS\napt-get update\napt-get install mysql-server -y\n\n# Initialise database\ncat << 'EoF' > /home/ubuntu/db_setup.sql\n\nCREATE USER 'awsuser'@'%' IDENTIFIED WITH mysql_native_password BY 'awspassword';\nGRANT ALL PRIVILEGES ON *.* TO 'awsuser'@'%' WITH GRANT OPTION;\nFLUSH PRIVILEGES;\nCREATE DATABASE immersionday;\n\nEoF\n\nmysql -e \"source /home/ubuntu/db_setup.sql\"\n\n# Enable open connections\nsed -i \"s/bind-address.*/bind-address = 0.0.0.0/\" /etc/mysql/mysql.conf.d/mysqld.cnf\nsystemctl restart mysql\n"
+     }
+    },
+    "DependsOn": [
+     "SOURCEVPCPublicSubnet1NATGateway0C022B7E"
+    ],
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/mysql-instance"
+    }
+   },
+   "dbSecret": {
+    "Type": "AWS::SecretsManager::Secret",
+    "Properties": {
+     "Name": "mysecret",
+     "SecretString": {
+      "Fn::Join": [
+       "",
+       [
+        "{\"username\": \"awsuser\", \"password\": \"awspassword\", \"host\": \"",
         {
          "Fn::GetAtt": [
-          "WebserverSGD0BE264E",
-          "GroupId"
+          "mysqlinstance",
+          "PrivateIp"
          ]
-        }
-       ],
-     "SubnetId": {
-        "Ref": "SOURCEVPCPublicSubnet1SubnetBBEA2A81"
-       },
-     "Tags": [
-        {
-         "Key": "Name",
-         "Value": "Bastion"
-        }
-       ],
-     "UserData": {
-      "Fn::Base64": "<powershell>\n\n$PlainPassword = 'Awspassword1'\n$SecurePassword = $PlainPassword | ConvertTo-SecureString -AsPlainText -Force\nNew-LocalUser 'admin' -Password $SecurePassword -FullName 'admin user' -Description 'for immersion day'\n\nAdd-LocalGroupMember -Group 'Remote Desktop Users' -Member admin\n</powershell>\n"
-      }
-    }
-  },
-  "PrivateDNS": {
-    "Type": "AWS::Route53::HostedZone",
-    "Properties": {
-     "Name": "drs.com",
-     "VPCs": [
-        {
-         "VPCID": { "Ref": "SOURCEVPCD437F867" },
-         "VPCRegion": "ap-southeast-1"
-        }
+        },
+        "\", \"dbname\": \"immersionday\"}"
+       ]
       ]
      }
     },
-  "CDKMetadata": {
-   "Type": "AWS::CDK::Metadata",
-   "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/11QS27CMBA9C3vjFsoFUlQhJFRZBLGtJmYgLo4d2WNQFOXuNQ5p0q78fvK8mSVfLfliBnc/l6frXKuCtzmBvLIofbUol7w91pKtz+Yo1kyEQiuZh8IgPbQR7W0gPEChcdRHLfPeSgWkrPkNP8DHVjyeT6ANEN6hYcKpW4Tjx1tD6CIeAn2TJ8sodi0rNMRylMEpajbOhjp1+C/sIBhZHrCqNfTjt8YTGIkdU1DxNjXTfxzh7FnpGEANnpTUFk4F6Ggpc7nF42R1HS+SNttF7z156NK8KZ/mlCc0z8yAJ/4B3CXuO9Se0I5BIOsl6Dg99c0iz3s+Lt5zYeOHTcc8SofkKzBwQcf7y0SlY3v0NjiZFh5wx0RDpTUvb3zxylezb6/U3AVDqkK+798f1dgnrDUCAAA="
+    "DependsOn": [
+     "mysqlinstance"
+    ],
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/dbSecret"
+    }
    },
-   "Metadata": {
-    "aws:cdk:path": "WebhostingStack/CDKMetadata/Default"
+   "Bastion": {
+     "Type": "AWS::EC2::Instance",
+     "Properties": {
+      "IamInstanceProfile": "SSMInstanceProfileSrc",
+      "ImageId": { "Ref": "LatestWindowsAMI" },
+      "InstanceType": "t3a.medium",
+      "SecurityGroupIds": [
+         {
+          "Fn::GetAtt": [
+           "WebserverSGD0BE264E",
+           "GroupId"
+          ]
+         }
+        ],
+      "SubnetId": {
+         "Ref": "SOURCEVPCPublicSubnet1SubnetBBEA2A81"
+        },
+      "Tags": [
+         {
+          "Key": "Name",
+          "Value": "Bastion"
+         }
+        ],
+      "UserData": {
+       "Fn::Base64": "<powershell>\n\n$PlainPassword = 'Awspassword1'\n$SecurePassword = $PlainPassword | ConvertTo-SecureString -AsPlainText -Force\nNew-LocalUser 'admin' -Password $SecurePassword -FullName 'admin user' -Description 'for immersion day'\n\nAdd-LocalGroupMember -Group 'Remote Desktop Users' -Member admin\n</powershell>\n"
+       }
+     }
+   },
+   "PrivateDNS": {
+     "Type": "AWS::Route53::HostedZone",
+     "Properties": {
+      "Name": "drs.com",
+      "VPCs": [
+         {
+          "VPCID": { "Ref": "SOURCEVPCD437F867" },
+          "VPCRegion": { "Ref" : "AWS::Region" }
+         }
+       ]
+      }
+     },
+   "CDKMetadata": {
+    "Type": "AWS::CDK::Metadata",
+    "Properties": {
+     "Analytics": "v2:deflate64:H4sIAAAAAAAA/11QS27CMBA9C3vjFsoFUlQhJFRZBLGtJmYgLo4d2WNQFOXuNQ5p0q78fvK8mSVfLfliBnc/l6frXKuCtzmBvLIofbUol7w91pKtz+Yo1kyEQiuZh8IgPbQR7W0gPEChcdRHLfPeSgWkrPkNP8DHVjyeT6ANEN6hYcKpW4Tjx1tD6CIeAn2TJ8sodi0rNMRylMEpajbOhjp1+C/sIBhZHrCqNfTjt8YTGIkdU1DxNjXTfxzh7FnpGEANnpTUFk4F6Ggpc7nF42R1HS+SNttF7z156NK8KZ/mlCc0z8yAJ/4B3CXuO9Se0I5BIOsl6Dg99c0iz3s+Lt5zYeOHTcc8SofkKzBwQcf7y0SlY3v0NjiZFh5wx0RDpTUvb3zxylezb6/U3AVDqkK+798f1dgnrDUCAAA="
+    },
+    "Metadata": {
+     "aws:cdk:path": "WebhostingStack/CDKMetadata/Default"
+    }
    }
   }
  }
-}

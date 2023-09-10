@@ -651,7 +651,7 @@
        ]
       }
      },
-     "ImageId": "ami-0b0dcb5067f052a63",
+     "ImageId": { "Ref": "LatestAmiId" },
      "InstanceType": "m5.2xlarge",
      "SecurityGroupIds": [
       {
